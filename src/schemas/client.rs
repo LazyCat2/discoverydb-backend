@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Debug, sqlx::Type)]
+#[repr(u8)]
 pub enum ClientPlatform {
     Android,
     Ios,
@@ -12,7 +14,7 @@ pub struct Client {
     pub id: u16,
     pub name: String,
     pub developer: String,
-    pub platform: u8,
+    pub platform: ClientPlatform,
     pub description: Option<String>,
     pub icon: Option<String>,
     pub source: String,

@@ -1,2 +1,2 @@
 [default.databases.main]
-url = "./database"
+url = "./database.db"
