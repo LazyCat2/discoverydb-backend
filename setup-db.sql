@@ -34,7 +34,7 @@ CREATE TABLE "server" (
 	"banner"	TEXT,
 	"owner"	TEXT NOT NULL,
 	"members"	INTEGER NOT NULL,
-	"invite"	INTEGER NOT NULL UNIQUE,
+	"invite"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("id")
 );
 
