@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::Whatever;
+use super::{Visibility, Whatever};
 
 #[derive(Serialize, Deserialize, Debug, sqlx::Type)]
 #[repr(u8)]
@@ -16,4 +16,6 @@ pub struct Theme {
     author: String,
     data: Whatever,
     platform: ThemeClient,
+
+    pub visibility: Visibility,
 }

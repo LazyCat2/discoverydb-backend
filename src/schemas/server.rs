@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::schemas::Visibility;
 
 #[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
 pub struct Server {
@@ -10,4 +11,6 @@ pub struct Server {
     pub owner: String,
     pub members: u32,
     pub invite: String,
+
+    pub visibility: Visibility,
 }

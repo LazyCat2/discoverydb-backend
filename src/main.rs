@@ -2,6 +2,8 @@
 extern crate rocket;
 mod fetch;
 mod schemas;
+mod result;
+mod macros;
 
 use fetch::*;
 use rocket_db_pools::sqlx;
@@ -18,12 +20,14 @@ fn rocket() -> _ {
     rocket::build().attach(MainDB::init()).mount(
         "/",
         routes![
+            // Single
             fetch_server,
             fetch_bot,
             fetch_client,
             fetch_theme,
             fetch_plugin,
-            //
+
+            // Multiple
             fetch_servers,
             fetch_bots,
             fetch_clients,
