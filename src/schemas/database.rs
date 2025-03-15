@@ -1,10 +1,7 @@
 use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
-use mongodb::{
-    results::InsertOneResult,
-    sync::{Client as MongoClient, Collection},
-};
+use mongodb::sync::{Client as MongoClient, Collection};
 
 /// Placeholder type
 /// Should be removed before going to production
