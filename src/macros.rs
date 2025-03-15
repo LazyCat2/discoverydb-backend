@@ -1,25 +1,35 @@
 #[macro_export]
 macro_rules! fetch_public_items {
-    ($db:expr, $table:expr, $struct:ty) => {{
-        let items = sqlx::query(&format!("SELECT * FROM {}", $table))
-            .fetch_all(&mut **$db)
-            .await
-            .map_err(|err| create_error!(DatabaseError {
+    ($collection:expr, id) => {{
+        match db.$collection.find_one(doc! {"_id": id}, None) {
+            Err(error) => create_error!(DatabaseError {
                 error: err.to_string()
-            }))?;
+            }),
+            Ok(item) => Ok(Json(
+            	item
+            ))
+        }
+    }};
 
-        Ok(Json(
-            items
-                .iter()
-                .filter_map(|row| {
-                    let item: $struct = <$struct>::from_row(row).ok()?;
-                    if let Visibility::Public = item.visibility {
-                        Some(item)
-                    } else {
-                        None
-                    }
-                })
-                .collect::<Vec<$struct>>(),
-        ))
+    ($collection:expr, name) => {{
+    	match db.$collection.find_one(doc! {"name": name}, None) {
+    	    Err(error) => create_error!(DatabaseError {
+    	        error: err.to_string()
+    	    }),
+    	    Ok(item) => Ok(Json(
+    	    	item
+    	    ))
+    	}
+    }};
+
+    ($collection:expr, $struct:ty) => {{
+    	match db.$collection.find(None, None) {
+    	    Err(error) => create_error!(DatabaseError {
+    	        error: err.to_string()
+    	    }),
+    	    Ok(item) => Ok(Json(
+    	    	item.collect::Vec<$struct>().await
+    	    ))
+    	}
     }};
 }

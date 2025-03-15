@@ -1,23 +1,18 @@
 #[macro_use]
 extern crate rocket;
 mod fetch;
-mod schemas;
-mod result;
 mod macros;
+mod result;
+mod schemas;
 
 use fetch::*;
-use rocket_db_pools::sqlx;
-use rocket_db_pools::{Connection, Database};
+use rocket::State;
 
-#[derive(Database)]
-#[database("main")]
-pub struct MainDB(sqlx::SqlitePool);
-
-pub type Main = Connection<MainDB>;
+pub type DB = State<schemas::Database>;
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(MainDB::init()).mount(
+    rocket::build().manage(schemas::Database::init()).mount(
         "/",
         routes![
             // Single
@@ -26,7 +21,6 @@ fn rocket() -> _ {
             fetch_client,
             fetch_theme,
             fetch_plugin,
-
             // Multiple
             fetch_servers,
             fetch_bots,

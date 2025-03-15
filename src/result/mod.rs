@@ -1,7 +1,7 @@
 pub mod result;
 
-use std::fmt::Display;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 // Code borrowed from https://github.com/revoltchat/backend/tree/main/crates/core/result/src
 // Thank you Revolt!
@@ -47,8 +47,10 @@ pub enum ErrorType {
     CannotReportYourself,
 
     // ? Account errors
-    NoAccess, /// No access to the data (e.g. trying to access a listing that was privated)
-    NotAllowed, /// Not allowed to perform the action (e.g. trying to delete a listing you don't own)
+    NoAccess,
+    /// No access to the data (e.g. trying to access a listing that was privated)
+    NotAllowed,
+    /// Not allowed to perform the action (e.g. trying to delete a listing you don't own)
     InvalidCredentials,
     InvalidSession,
     NotAuthenticated,
@@ -64,7 +66,7 @@ pub enum ErrorType {
     NoEffect,
     FailedValidation {
         error: String,
-    }
+    },
 }
 
 #[macro_export]

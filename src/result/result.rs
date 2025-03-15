@@ -35,7 +35,6 @@ impl<'r> Responder<'r, 'static> for Error {
             ErrorType::NotFound => Status::NotFound,
             ErrorType::NoEffect => Status::Ok,
             ErrorType::FailedValidation { .. } => Status::BadRequest,
-
         };
 
         // Serialize the error data structure into JSON.

@@ -1,81 +1,29 @@
-use crate::schemas::*;
-use crate::{create_error, Main};
-use rocket::serde::json::Json;
-use rocket_db_pools::sqlx;
-use sqlx::FromRow;
 use crate::result::Error;
+use crate::schemas::*;
+use crate::{create_error, fetch_public_items, DB};
+use rocket::serde::json::Json;
 
 #[get("/server/<id>")]
-pub async fn fetch_server(mut db: Main, id: String) -> Result<Json<Server>, Error> {
-    let item = sqlx::query("SELECT * FROM server WHERE id = ?")
-        .bind(id)
-        .fetch_one(&mut **db)
-        .await
-        .map_err(|err| create_error!(DatabaseError {
-            error: err.to_string()
-        }))?;
-
-    Server::from_row(&item)
-        .map(Json)
-        .map_err(|_| create_error!(InternalError))
+pub async fn fetch_server(db: &DB, id: String) -> Result<Json<Server>, Error> {
+	fetch_public_items!(server, id)
 }
 
 #[get("/bot/<id>")]
-pub async fn fetch_bot(mut db: Main, id: String) -> Result<Json<Bot>, Error> {
-    let item = sqlx::query("SELECT * FROM bot WHERE id = ?")
-        .bind(id)
-        .fetch_one(&mut **db)
-        .await
-        .map_err(|err| create_error!(DatabaseError {
-            error: err.to_string()
-        }))?;
-
-    Bot::from_row(&item)
-        .map(Json)
-        .map_err(|_| create_error!(InternalError))
+pub async fn fetch_bot(db: &DB, id: String) -> Result<Json<Bot>, Error> {
+	fetch_public_items!(bot, id)
 }
 
-#[get("/client/<id>")]
-pub async fn fetch_client(mut db: Main, id: String) -> Result<Json<Client>, Error> {
-    let item = sqlx::query("SELECT * FROM client WHERE name = ?")
-        .bind(id)
-        .fetch_one(&mut **db)
-        .await
-        .map_err(|err| create_error!(DatabaseError {
-            error: err.to_string()
-        }))?;
-
-    Client::from_row(&item)
-        .map(Json)
-        .map_err(|_| create_error!(InternalError))
+#[get("/client/<name>")]
+pub async fn fetch_client(db: &DB, name: String) -> Result<Json<Client>, Error> {
+	fetch_public_items!(client, name)
 }
 
-#[get("/theme/<id>")]
-pub async fn fetch_theme(mut db: Main, id: String) -> Result<Json<Theme>, Error> {
-    let item = sqlx::query("SELECT * FROM theme WHERE name = ?")
-        .bind(id)
-        .fetch_one(&mut **db)
-        .await
-        .map_err(|err| create_error!(DatabaseError {
-            error: err.to_string()
-        }))?;
-
-    Theme::from_row(&item)
-        .map(Json)
-        .map_err(|_| create_error!(InternalError))
+#[get("/theme/<name>")]
+pub async fn fetch_theme(db: &DB, name: String) -> Result<Json<Theme>, Error> {
+	fetch_public_items!(theme, id)
 }
 
-#[get("/plugin/<id>")]
-pub async fn fetch_plugin(mut db: Main, id: String) -> Result<Json<Plugin>, Error> {
-    let item = sqlx::query("SELECT * FROM plugin WHERE name = ?")
-        .bind(id)
-        .fetch_one(&mut **db)
-        .await
-        .map_err(|err| create_error!(DatabaseError {
-            error: err.to_string()
-        }))?;
-
-    Plugin::from_row(&item)
-        .map(Json)
-        .map_err(|_| create_error!(InternalError))
+#[get("/plugin/<name>")]
+pub async fn fetch_plugin(db: &DB, name: String) -> Result<Json<Plugin>, Error> {
+	fetch_public_items!(plugin, name)
 }
