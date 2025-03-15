@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use crate::schemas::Visibility;
 
 #[derive(Serialize, Deserialize, Debug, sqlx::Type)]
 #[repr(u8)]
 pub enum ClientPlatform {
     Android,
-    Ios,
+    iOS,
     Web,
     Desktop,
 }
@@ -18,4 +19,6 @@ pub struct Client {
     pub description: Option<String>,
     pub icon: Option<String>,
     pub source: String,
+
+    pub visibility: Visibility,
 }

@@ -1,90 +1,31 @@
 use crate::schemas::*;
-use crate::Main;
+use crate::{create_error, fetch_public_items, Main};
 use rocket::serde::json::Json;
 use rocket_db_pools::sqlx;
 use sqlx::FromRow;
+use crate::result::Error;
 
 #[get("/servers")]
-pub async fn fetch_servers(mut db: Main) -> Option<Json<Vec<Server>>> {
-    if let Ok(items) = sqlx::query("SELECT * FROM server")
-        .fetch_all(&mut **db)
-        .await
-    {
-        Some(Json(
-            items
-                .iter()
-                .filter_map(|row| Server::from_row(row).ok())
-                .collect::<Vec<Server>>(),
-        ))
-    } else {
-        None
-    }
+pub async fn fetch_servers(mut db: Main) -> Result<Json<Vec<Server>>, Error> {
+    fetch_public_items!(db, "server", Server)
 }
 
 #[get("/bots")]
-pub async fn fetch_bots(mut db: Main) -> Option<Json<Vec<Bot>>> {
-    match sqlx::query("SELECT * FROM bot").fetch_all(&mut **db).await {
-        Ok(items) => Some(Json(
-            items
-                .iter()
-                .filter_map(|row| Bot::from_row(row).ok())
-                .collect::<Vec<Bot>>(),
-        )),
-
-        Err(error) => {
-            println!("{error}");
-            None
-        }
-    }
+pub async fn fetch_bots(mut db: Main) -> Result<Json<Vec<Bot>>, Error> {
+    fetch_public_items!(db, "bot", Bot)
 }
 
 #[get("/clients")]
-pub async fn fetch_clients(mut db: Main) -> Option<Json<Vec<Client>>> {
-    if let Ok(items) = sqlx::query("SELECT * FROM client")
-        .fetch_all(&mut **db)
-        .await
-    {
-        Some(Json(
-            items
-                .iter()
-                .filter_map(|row| Client::from_row(row).ok())
-                .collect::<Vec<Client>>(),
-        ))
-    } else {
-        None
-    }
+pub async fn fetch_clients(mut db: Main) -> Result<Json<Vec<Client>>, Error> {
+    fetch_public_items!(db, "client", Client)
 }
 
 #[get("/themes")]
-pub async fn fetch_themes(mut db: Main) -> Option<Json<Vec<Theme>>> {
-    if let Ok(items) = sqlx::query("SELECT * FROM theme")
-        .fetch_all(&mut **db)
-        .await
-    {
-        Some(Json(
-            items
-                .iter()
-                .filter_map(|row| Theme::from_row(row).ok())
-                .collect::<Vec<Theme>>(),
-        ))
-    } else {
-        None
-    }
+pub async fn fetch_themes(mut db: Main) -> Result<Json<Vec<Theme>>, Error> {
+    fetch_public_items!(db, "theme", Theme)
 }
 
 #[get("/plugins")]
-pub async fn fetch_plugins(mut db: Main) -> Option<Json<Vec<Plugin>>> {
-    if let Ok(items) = sqlx::query("SELECT * FROM plugin")
-        .fetch_all(&mut **db)
-        .await
-    {
-        Some(Json(
-            items
-                .iter()
-                .filter_map(|row| Plugin::from_row(row).ok())
-                .collect::<Vec<Plugin>>(),
-        ))
-    } else {
-        None
-    }
+pub async fn fetch_plugins(mut db: Main) -> Result<Json<Vec<Plugin>>, Error> {
+    fetch_public_items!(db, "plugin", Plugin)
 }
