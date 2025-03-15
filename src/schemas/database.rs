@@ -69,14 +69,14 @@ impl Database {
             MongoClient::with_uri_str("mongodb://revolt.doyouliveinthe.uk:27018/DiscoveryDB")
                 .unwrap();
         let db = client.database("DiscoveryDB");
-        
+
         Database {
-        	bot: db.collection("bot"),
-        	client: db.collection("client"),
-        	plugin: db.collection("plugin"),
-        	report: db.collection("report"),
-        	server: db.collection("server"),
-        	theme: db.collection("theme")
+            bot: db.collection("bot"),
+            client: db.collection("client"),
+            plugin: db.collection("plugin"),
+            report: db.collection("report"),
+            server: db.collection("server"),
+            theme: db.collection("theme"),
         }
     }
 }

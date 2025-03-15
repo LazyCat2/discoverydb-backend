@@ -1,35 +1,52 @@
 #[macro_export]
 macro_rules! fetch_public_items {
-    ($collection:expr, id) => {{
-        match db.$collection.find_one(doc! {"_id": id}, None) {
-            Err(error) => create_error!(DatabaseError {
-                error: err.to_string()
-            }),
-            Ok(item) => Ok(Json(
-            	item
-            ))
+    ($collection:expr, $id:expr, id) => {{
+    use mongodb::bson::doc;
+    
+        match $collection.find_one(doc! {"_id": $id}, None) {
+            Err(error) => Err(create_error!(DatabaseError {
+                error: error.to_string()
+            })),
+
+            Ok(item) => match item {
+            	Some(item) => Ok(Json(item)),
+            	None => Err(create_error!(NotFound)),
+            }
         }
     }};
 
-    ($collection:expr, name) => {{
-    	match db.$collection.find_one(doc! {"name": name}, None) {
-    	    Err(error) => create_error!(DatabaseError {
-    	        error: err.to_string()
-    	    }),
-    	    Ok(item) => Ok(Json(
-    	    	item
-    	    ))
+    ($collection:expr, $name:expr, name) => {{
+    use mongodb::bson::doc;
+    
+    	match $collection.find_one(doc! {"name": $name}, None) {
+    	    Err(error) => Err(create_error!(DatabaseError {
+    	        error: error.to_string()
+    	    })),
+
+    	    Ok(item) => match item {
+    	    	Some(item) => Ok(Json(item)),
+    	    	None => Err(create_error!(NotFound)),
+    	    }
     	}
     }};
 
-    ($collection:expr, $struct:ty) => {{
-    	match db.$collection.find(None, None) {
-    	    Err(error) => create_error!(DatabaseError {
-    	        error: err.to_string()
-    	    }),
-    	    Ok(item) => Ok(Json(
-    	    	item.collect::Vec<$struct>().await
-    	    ))
+    ($collection:expr, $struct:ty) => {{    
+    	match $collection.find(None, None) {
+    	    Err(error) => Err(create_error!(DatabaseError {
+    	        error: error.to_string()
+    	    })),
+
+
+    	    Ok(mut cursor) => {
+    	    	let mut result: Vec<$struct> = Vec::new();
+    	        while let Some(doc) = cursor.next() {
+    	        	if let Ok(doc) = doc {
+	    	        	result.push(doc);
+    	        	}
+    	        }
+
+    	        Ok(Json(result))
+    	    }
     	}
     }};
 }
