@@ -63,7 +63,7 @@ pub struct Database {
 impl Database {
     pub fn init() -> Self {
         let client =
-            MongoClient::with_uri_str("mongodb://revolt.doyouliveinthe.uk:27018/DiscoveryDB")
+            MongoClient::with_uri_str(std::env::var("MONGO_URL").unwrap())
                 .unwrap();
         let db = client.database("DiscoveryDB");
 
