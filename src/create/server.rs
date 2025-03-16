@@ -1,8 +1,7 @@
 use mongodb::bson::{doc, Timestamp};
 use rocket::serde::json::Json;
 use rocket::time::macros::time;
-use rocket::yansi::Paint;
-use crate::{create_error, fetch_from_db, DB};
+use crate::{create_error, DB};
 use crate::result::Error;
 use crate::schemas::{Listing, Server, Visibility};
 
