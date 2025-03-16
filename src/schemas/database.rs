@@ -16,7 +16,6 @@ pub enum ThemeClient {
 pub enum ClientPlatform {
     Android,
     iOS,
-
     Web,
     Desktop,
 }
@@ -63,6 +62,15 @@ pub struct Report {
     pub status: ReportStatus,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct User {
+	#[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+	pub id: Option<ObjectId>,
+
+	pub username: String,
+	pub avatar: String
+}
+
 pub struct Database {
     // ? Common things a user wants to see
     pub bot: Collection<Bot>,
@@ -79,6 +87,9 @@ pub struct Database {
     // ? Moderation stuff
     /// Reports for abusive content.
     pub report: Collection<Report>,
+
+    /// User data
+    pub user: Collection<User>
 }
 
 impl Database {
