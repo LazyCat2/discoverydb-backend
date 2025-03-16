@@ -11,17 +11,17 @@ pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
     let server = Server {
         listing: Listing {
             id: Some("hallo".to_string()),
-            slug: None,
-            name: "".to_string(),
+            slug: Some("sluggy is not needed for servers".to_string()),
+            name: "Revolt".to_string(),
             description: None,
-            visibility: Visibility::Locked,
-            tags: vec![]
+            visibility: Visibility::Public,
+            tags: vec!["average".to_string(), "discord mod".to_string()],
         },
         icon: None,
         banner: None,
-        owner: "".to_string(),
-        invite: "".to_string(),
-        members: 0,
+        owner: "Me".to_string(),
+        invite: "rvlt.gg/lounge".to_string(),
+        members: 69_420,
     };
 
     match db.server.insert_one(server, None) {
