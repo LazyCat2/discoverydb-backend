@@ -8,7 +8,6 @@ mod schemas;
 
 use crate::create::make_test_server;
 use crate::result::Error;
-use crate::schemas::Server;
 use fetch::*;
 use rocket::serde::json::Json;
 use rocket::State;
