@@ -6,7 +6,7 @@ use std::fmt::Display;
 // Code borrowed from https://github.com/revoltchat/backend/tree/main/crates/core/result/src
 // Thank you Revolt!
 
-/// Result type with custom Error
+// /// Result type with custom Error
 // pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 /// Error information

@@ -1,16 +1,13 @@
-use mongodb::bson::{doc, Timestamp};
-use rocket::serde::json::Json;
-use rocket::time::macros::time;
-use crate::{create_error, DB};
-use crate::result::Error;
 use crate::schemas::{Listing, Server, Visibility};
+use crate::{create_error, APIResponce, DB};
+use mongodb::bson::doc;
+use rocket::serde::json::Json;
 
 #[post("/testServer")]
-pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
-    let server = Server {
+pub async fn make_test_server(db: &DB) -> APIResponce<Server> {
+    let mut server = Server {
         listing: Listing {
             id: Some("hallo".to_string()),
-            slug: Some("sluggy is not needed for servers".to_string()),
             name: "Revolt".to_string(),
             description: None,
             visibility: Visibility::Public,
@@ -19,21 +16,16 @@ pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
         icon: None,
         banner: None,
         owner: "Me".to_string(),
-        invite: "rvlt.gg/lounge".to_string(),
+        invite: "lounge".to_string(),
         members: 69_420,
     };
 
-    match db.server.insert_one(server, None) {
+    match db.server.insert_one(server.clone(), None) {
         Ok(insert_result) => {
             let inserted_id = insert_result.inserted_id.as_str().unwrap().to_string();
+            server.listing.id = Some(inserted_id);
 
-            match db.server.find_one(doc! {"_id": inserted_id}, None) {
-                Ok(Some(inserted_server)) => Ok(Json(inserted_server)),
-                Ok(None) => Err(create_error!(NotFound)),
-                Err(error) => Err(create_error!(DatabaseError {
-                    error: error.to_string()
-                })),
-            }
+            Ok(Json(server))
         }
         Err(error) => Err(create_error!(DatabaseError {
             error: error.to_string()

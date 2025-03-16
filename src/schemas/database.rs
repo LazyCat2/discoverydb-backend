@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use mongodb::sync::{Client as MongoClient, Collection};
 
 use super::{Bot, Client, Plugin, Server, Theme};
+use rocket::outcome::Outcome;
+use rocket::request::{self, FromRequest, Request};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ThemeClient {
@@ -64,11 +66,23 @@ pub struct Report {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
-	#[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-	pub id: Option<ObjectId>,
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
 
-	pub username: String,
-	pub avatar: String
+    pub username: String,
+    pub avatar: String,
+}
+
+impl<'r> FromRequest<'r> for User {
+    type Error = crate::result::Error;
+
+    fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+        Outcome::Success(User {
+            id: None,
+            username: "".to_string(),
+            avatar: "".to_string(),
+        })
+    }
 }
 
 pub struct Database {
@@ -89,14 +103,12 @@ pub struct Database {
     pub report: Collection<Report>,
 
     /// User data
-    pub user: Collection<User>
+    pub user: Collection<User>,
 }
 
 impl Database {
     pub fn init() -> Self {
-        let client =
-            MongoClient::with_uri_str(std::env::var("MONGO_URL").unwrap())
-                .unwrap();
+        let client = MongoClient::with_uri_str(std::env::var("MONGO_URL").unwrap()).unwrap();
         let db = client.database("DiscoveryDB");
 
         Database {
@@ -106,6 +118,7 @@ impl Database {
             report: db.collection("report"),
             server: db.collection("server"),
             theme: db.collection("theme"),
+            user: db.collection("user"),
         }
     }
 }
