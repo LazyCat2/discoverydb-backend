@@ -26,7 +26,7 @@ pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
 
     match db.server.insert_one(server, None) {
         Ok(insert_result) => {
-            let inserted_id = insert_result.inserted_id.to_string();
+            let inserted_id = insert_result.inserted_id.as_str().unwrap().to_string();
 
             match db.server.find_one(doc! {"_id": inserted_id}, None) {
                 Ok(Some(inserted_server)) => Ok(Json(inserted_server)),
