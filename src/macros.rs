@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! fetch_public_items {
+macro_rules! fetch_from_db {
     ($collection:expr, $id:expr, id) => {{
         use mongodb::bson::doc;
 
@@ -15,10 +15,10 @@ macro_rules! fetch_public_items {
         }
     }};
 
-    ($collection:expr, $name:expr, name) => {{
+    ($collection:expr, $slug:expr, slug) => {{
         use mongodb::bson::doc;
 
-        match $collection.find_one(doc! {"name": $name}, None) {
+        match $collection.find_one(doc! {"listing.slug": $slug}, None) {
             Err(error) => Err(create_error!(DatabaseError {
                 error: error.to_string()
             })),
@@ -31,6 +31,8 @@ macro_rules! fetch_public_items {
     }};
 
     ($collection:expr, $struct:ty) => {{
+        use crate::schemas::Visibility;
+
         match $collection.find(None, None) {
             Err(error) => Err(create_error!(DatabaseError {
                 error: error.to_string()
@@ -40,7 +42,10 @@ macro_rules! fetch_public_items {
                 let mut result: Vec<$struct> = Vec::new();
                 while let Some(doc) = cursor.next() {
                     if let Ok(doc) = doc {
-                        result.push(doc);
+                        // check if visibility is public (doc is of type Plugin)
+                        if(doc.listing.visibility == Visibility::Public) {
+                            result.push(doc);
+                        }
                     }
                 }
 

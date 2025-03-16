@@ -1,3 +1,5 @@
 /target
 database.db
 run.sh
+.idea
+.env
