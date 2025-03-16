@@ -47,10 +47,12 @@ pub enum ErrorType {
     CannotReportYourself,
 
     // ? Account errors
-    NoAccess,
     /// No access to the data (e.g. trying to access a listing that was privated)
-    NotAllowed,
+    NoAccess,
     /// Not allowed to perform the action (e.g. trying to delete a listing you don't own)
+    NotAllowed,
+
+    // ? Authentication errors
     InvalidCredentials,
     InvalidSession,
     NotAuthenticated,

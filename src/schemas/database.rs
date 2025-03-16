@@ -3,23 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use mongodb::sync::{Client as MongoClient, Collection};
 
-/// Placeholder type
-/// Should be removed before going to production
-type Whatever = String;
-
-#[derive(Serialize, Deserialize, Debug)]
-pub enum Visibility {
-    /**
-        If content reported was found to break rules, we set it to ForcedPrivate.
-        The user cannot change it from any other status, and will appear as though it was deleted.
-
-        We keep it in the database for moderation & legal purposes, but it will NOT be visible to the public.
-    */
-    ForcedPrivate,
-    Private,
-    Unlisted,
-    Public,
-}
+use super::{Bot, Client, Plugin, Server, Theme};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ThemeClient {
@@ -27,37 +11,74 @@ pub enum ThemeClient {
     Revite,
 }
 
+#[allow(non_camel_case_types)] // Piss off :3
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ClientPlatform {
     Android,
-    Ios,
+    iOS,
+
     Web,
     Desktop,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ReportStatus {
+    /// The report has been submitted, but not yet reviewed.
     Pending,
-    ActionDealt,
+    /// The report is being reviewed by a moderator.
+    Reviewing,
+
+    /// The report has been reviewed and no action was taken.
     Ignored,
+    /// The report has been reviewed and action has been taken.
+    ActionDealt {
+        /// The action that was taken
+        action: String,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ReportType {
+    DiscoveryDBUser,
+
     Bot,
     Server,
+
+    Theme,
     Plugin,
     Client,
-    Theme,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Report {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+
+    pub reporter_id: String,
+
+    pub reported_id: String,
+    pub reported_type: ReportType,
+
+    pub reason: String,
+    pub status: ReportStatus,
 }
 
 pub struct Database {
+    // ? Common things a user wants to see
     pub bot: Collection<Bot>,
-    pub client: Collection<Client>,
-    pub plugin: Collection<Plugin>,
-    pub report: Collection<Report>,
     pub server: Collection<Server>,
+
+    // ? Other shit a user may want
+    // TODO: Figure out conversion for Revite -> Android and Android -> Revite themes.
     pub theme: Collection<Theme>,
+    /// Custom Revolt clients.
+    pub client: Collection<Client>,
+    /// Plugins that modify supported clients.
+    pub plugin: Collection<Plugin>,
+
+    // ? Moderation stuff
+    /// Reports for abusive content.
+    pub report: Collection<Report>,
 }
 
 impl Database {
@@ -76,97 +97,4 @@ impl Database {
             theme: db.collection("theme"),
         }
     }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Client {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-
-    pub name: String,
-    pub description: Option<String>,
-    pub icon: Option<String>,
-
-    pub developer: String,
-    pub platform: ClientPlatform,
-    pub source: String,
-
-    pub visibility: Visibility,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Bot {
-    #[serde(rename = "_id")]
-    pub id: String,
-
-    pub name: String,
-    pub description: Option<String>,
-
-    pub avatar: Option<String>,
-    pub banner: Option<String>,
-
-    pub developer: String,
-
-    pub visibility: Visibility,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Theme {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-
-    pub name: String,
-    pub description: Option<String>,
-
-    pub author: String,
-    pub data: Whatever,
-    pub platform: ThemeClient,
-
-    pub visibility: Visibility,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Server {
-    #[serde(rename = "_id")]
-    pub id: String,
-
-    pub name: String,
-    pub description: Option<String>,
-
-    pub icon: Option<String>,
-    pub banner: Option<String>,
-
-    pub owner: String,
-    pub members: u32,
-    pub invite: String,
-
-    pub visibility: Visibility,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Report {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-
-    pub reporter_id: String,
-    pub reported_id: String,
-
-    pub reported_type: ReportType,
-
-    pub reason: String,
-    pub status: ReportStatus,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Plugin {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-
-    pub name: String,
-    pub description: Option<String>,
-
-    pub developer: String,
-    pub source: String,
-
-    pub visibility: Visibility,
 }
