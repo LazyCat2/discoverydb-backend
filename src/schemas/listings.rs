@@ -1,4 +1,3 @@
-use mongodb::bson::{oid::ObjectId, Timestamp};
 use serde::{Deserialize, Serialize};
 
 use super::{ClientPlatform, ThemeClient};
@@ -7,8 +6,8 @@ use super::{ClientPlatform, ThemeClient};
 /// Should be removed before going to production
 type Whatever = String;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-#[repr(i32)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
+#[repr(i8)]
 pub enum Visibility {
     /**
         If content was found to break rules, we set it to Locked.
@@ -32,6 +31,7 @@ pub enum Visibility {
         Hidden from:
         - Search
         - Public listings
+
         Seen in:
         - Direct links
     */
@@ -47,23 +47,21 @@ pub enum Visibility {
     Public = 2,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Listing {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    pub slug: Option<String>,
 
     pub name: String,
     pub description: Option<String>,
 
     pub visibility: Visibility,
     pub tags: Vec<String>,
-
     // pub created: Timestamp,
     // pub updated: Timestamp,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Server {
     #[serde(flatten)]
     pub listing: Listing,
