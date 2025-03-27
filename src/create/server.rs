@@ -10,8 +10,8 @@ use crate::schemas::{Listing, Server, Visibility};
 pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
     let server = Server {
         listing: Listing {
-            id: Some("hallo".to_string()),
-            slug: Some("sluggy is not needed for servers".to_string()),
+            id: Some("server id goes here".to_string()),
+            slug: Some("haiii! :3 slug is not needed for servers".to_string()),
             name: "Revolt".to_string(),
             description: None,
             visibility: Visibility::Public,
@@ -19,7 +19,7 @@ pub async fn make_test_server(db: &DB) -> Result<Json<Server>, Error> {
         },
         icon: None,
         banner: None,
-        owner: "Me".to_string(),
+        owner: "user id goes here".to_string(),
         invite: "rvlt.gg/lounge".to_string(),
         members: 69_420,
     };
