@@ -73,10 +73,11 @@ pub struct User {
     pub avatar: String,
 }
 
+#[async_trait]
 impl<'r> FromRequest<'r> for User {
     type Error = crate::result::Error;
 
-    fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
         Outcome::Success(User {
             id: None,
             username: "".to_string(),
